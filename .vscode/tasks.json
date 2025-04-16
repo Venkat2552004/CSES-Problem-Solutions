@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile and run with timeout",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"if not exist \"${workspaceFolder}\\executables\" mkdir \"${workspaceFolder}\\executables\"",
+				"&&",
+				"g++",
+				"\"${file}\"",
+				"-o",
+				"\"${workspaceFolder}\\executables\\${fileBasenameNoExtension}.exe\"",
+				"&&",
+				"\"${workspaceFolder}\\executables\\${fileBasenameNoExtension}.exe\"",
+				"<",
+				"input.txt",
+				">",
+				"output.txt"
+			],
+			"presentation": {
+				"reveal": "always"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		}
+	]
+}
