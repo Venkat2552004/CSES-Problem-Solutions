@@ -1,20 +1,33 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
-#define ull unsigned long long
 
-int main()
-{
-    ull n;
+#define ll long long
+#define ul unsigned long
+#define ull unsigned long long
+#define take(A, N) for(int idx = 0; idx < N; idx++) cin >> A[idx];
+#define print(A) for(auto element : A) cout << element << ' ';
+#define println(A) for(auto element : A) cout << element << endl;
+#define sum(A) accumulate(A.begin(), A.end(), 0)
+#define all(A) A.begin(), A.end()
+#define loop(var, start, end) for(int var = start; var < end; var++)
+#define loopRev(var, start, end) for(int var = start; var >= end; var--)
+#define newline cout << endl
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL);
+
+const ll mod = 1e9 + 7;
+
+int main() {
+    fastio
+
+    ll n;
     cin >> n;
-    while (n > 0)
-    {
+
+    while(n != 1LL){
         cout << n << " ";
-        if (n == 1)
-            break;
-        if (n & 1)
-            n = (n * 3) + 1;
-        else
-            n /= 2;
+        if(n & 1) n = (n * 3) + 1;
+        else n/= 2;
     }
+
+    cout << n;
     return 0;
 }
