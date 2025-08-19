@@ -1,24 +1,34 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 
-#define ll long long
-#define ul unsigned long
-#define ull unsigned long long
-#define take(A, N) for(int idx = 0; idx < N; idx++) cin >> A[idx];
-#define print(A) for(auto element : A) cout << element << ' ';
-#define println(A) for(auto element : A) cout << element << endl;
-#define sort(A) sort(A.begin(), A.end())
-#define sum(A) accumulate(A.begin(), A.end(), 0)
-#define all(A) A.begin(), A.end()
-#define loop(var, start, end) for(int var = start; var < end; var++)
-#define newline cout << endl
-#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL);
-
-ll mod = 1e9 + 7;
-
 int main() {
-    fastio
+	int n, k;
+	cin >> n >> k;
 
-    cout << "Hello World!";
-    return 0;
+	vector<int> coins(n);
+	for(int i = 0; i < n; i++)
+		cin >> coins[i];
+	sort(coins.begin(), coins.end());
+	
+	vector<vector<int>> dp(n + 1, vector<int>(k + 1, INT_MAX));
+	dp[0][0] = 0;
+	for(int i = 1; i <= n; i++){
+		for(int j = 1; j <= k; j++){
+			if(j < coins[i - 1]) dp[i][j] = dp[i - 1][j];
+			else{
+				int remSum = j - coins[i - 1];
+				if(dp[i - 1][remSum] != INT_MAX){
+					dp[i][j] = 1 + dp[i - 1][remSum];
+}
+}
+}
+}
+
+int ans = INT_MAX;
+for(int i = 1; i <= n; i++){
+	ans = min(ans, dp[i][k]);
+}
+
+cout << ans;
+return 0;
 }
