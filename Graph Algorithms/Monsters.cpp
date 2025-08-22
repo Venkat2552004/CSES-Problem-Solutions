@@ -18,31 +18,8 @@ const ll mod = 1e9 + 7;
 
 vector<int> dx = {-1, 1, 0, 0};
 vector<int> dy = {0, 0, -1, 1};
-vector<string> dir = {"U", "D", "L", "R"};
+vector<char> dir = {'U', 'D', 'L', 'R'};
 
-
-bool dfs(int x, int y, int n, int m, int moves, vector<vector<bool>>& vis, vector<vector<char>> mat,
-            vector<vector<int>>& dist, string path, string& ans){
-    if(x == 0 || x == n - 1 || y == 0 || y == m - 1){
-        ans = path;
-        return true;
-    }
-
-    vis[x][y] = true;
-    bool flag = false;
-    for(int k = 0; k < 4; k++){
-        int nr = x + dx[k];
-        int nc = y + dy[k];
-        if(nr >= 0 && nr < n && nc >= 0 && nc < m && mat[nr][nc] == '.'
-            && !vis[nr][nc] && moves + 1 < dist[nr][nc]){
-                flag |= dfs(nr, nc, n, m, moves + 1, vis, mat, dist, path + dir[k], ans);
-        }
-        if(flag) break;
-    }
-
-    vis[x][y] = false;
-    return flag;
-}
 
 int main() {
     fastio
@@ -52,7 +29,7 @@ int main() {
 
     vector<vector<char>> mat(n, vector<char>(m));
     queue<pair<int, int>> q;
-    int x, y;
+    pair<int, int> start;
 
     loop(i, 0, n){
         loop(j, 0, m){
@@ -60,40 +37,93 @@ int main() {
             if(mat[i][j] == 'M')
                 q.push({i, j});
             else if(mat[i][j] == 'A'){
-                x = i, y = j;
+                start = {i, j};
             }
         }
     }
 
-    vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+    vector<vector<int>> monster_time(n, vector<int>(m, -1));
 
-    int moves = 0;
+    int time = 0;
     while(!q.empty()){
         int sz = q.size();
         while(sz--){
             auto &[i, j] = q.front();
             q.pop();
 
-            if(dist[i][j] != INT_MAX) continue;
-            dist[i][j] = moves;
+            if(monster_time[i][j] != -1) continue;
+            monster_time[i][j] = time;
             
             for(int k = 0; k < 4; k++){
                 int nr = i + dx[k];
                 int nc = j + dy[k];
                 if(nr >= 0 && nr < n && nc >= 0 && nc < m 
-                && mat[nr][nc] == '.' && dist[nr][nc] == INT_MAX)
+                && mat[nr][nc] != '#' && monster_time[nr][nc] == -1)
                     q.push({nr, nc});
             }
         }
-        moves++;
+        time++;
     }
 
-    vector<vector<bool>> vis(n, vector<bool>(m, false));
-    string ans = "";
+    vector<vector<pair<int, int>>> parent(n, vector<pair<int, int>>(m, {-1, -1}));
+    pair<int, int> end = {-1, -1};
 
-    if(dfs(x, y, n, m, 0, vis, mat, dist, "", ans))
-        cout << "YES\n" << ans.size() << endl << ans;
-    else cout << "NO";
+    q.push(start);
+    time = 0;
+    bool flag = false;
+    while(!q.empty() && !flag) {
+        int sz = q.size();
+        while(sz--) {
+            auto [i, j] = q.front();
+            q.pop();
+    
+            if(i == 0 || i == n - 1 || j == 0 || j == n - 1) {
+                end = {i, j};
+                flag = true;
+                break;
+            }
+
+            for(int k = 0; k < 4; k++) {
+                int nr = i + dx[k];
+                int nc = j + dy[k];
+    
+                if(nr >= 0 && nr < n && nc >= 0 && nc < m){
+                    auto [pr, pc] = parent[nr][nc];
+                    if(pr == -1 && pc == -1 && mat[nr][nc] == '.' && time + 1 < monster_time[nr][nc]){
+                        parent[nr][nc] = {i, j};
+                        q.push({nr, nc});
+                    }
+                }
+            }
+        }
+        time++;
+    }
+
+    if(!flag){
+        cout << "NO\n";
+        return 0;
+    }
+
+    vector<char> path;
+    auto curr = end;
+    while(curr != start) {
+        auto [i, j] = curr;
+        auto [pr, pc] = parent[i][j];
+        for(int k = 0; k < 4; k++){
+            if(i - pr == dx[k] && j - pc == dy[k]){
+                path.push_back(dir[k]);
+            }
+        }
+        curr = parent[i][j];
+    }
+
+    reverse(all(path));
+    cout << "YES\n" << path.size() << "\n";
+    for(char c : path) cout << c;
+
+
+    
+        
 
     // queue<tuple<int, int, string>> qq;
     // qq.push({x, y, ""});
