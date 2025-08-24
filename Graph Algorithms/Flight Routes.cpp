@@ -21,22 +21,23 @@ class Solution {
     
   public:
     vector<ll> minimumKCosts(int n, int k, vector<vector<pair<int, int>>>& G) {
-        vector<int> vis(n + 1, k);
-        priority_queue<ll> mxh;
+        vector<int> vis(n + 1);
+        //priority_queue<ll> mxh;
         priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;
-
+        
         pq.push({0, 1});
-
-        while(mxh.size() < k) {
+        
+        vector<ll> ans;
+        while(!pq.empty()) {
             auto [w, node] = pq.top();
             pq.pop();
 
-            if(vis[node] == 0) continue;
-            vis[node]--;
+            if(vis[node] == k) continue;
+            vis[node]++;
 
             if(node == n){
-                mxh.push(w);
-                if(mxh.size() > k) mxh.pop();
+                ans.push_back(w);
+                //if(mxh.size() > k) mxh.pop();
             }
 
             for(auto [adjNode, cost] : G[node]) {
@@ -44,12 +45,7 @@ class Solution {
             }
         }
 
-        vector<ll> ans;
-        while(!mxh.empty()){
-            ans.push_back(mxh.top());
-            mxh.pop();
-        }
-        reverse(all(ans));
+        sort(all(ans));
         return ans;
     }
 };
