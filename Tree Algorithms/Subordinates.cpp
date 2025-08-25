@@ -4,28 +4,40 @@ using namespace std;
 #define ll long long
 #define ul unsigned long
 #define ull unsigned long long
-#define take(A, N) for(int idx = 0; idx < N; idx++) cin >> A[idx];
-#define print(A) for(auto element : A) cout << element << ' ';
-#define println(A) for(auto element : A) cout << element << endl;
+#define take(A, N) for(int idx = 0; idx < N; idx++) cin >> A[idx]
+#define print(A) for(auto element : A) cout << element << ' '
+#define println(A) for(auto element : A) cout << element << endl
 #define sum(A) accumulate(A.begin(), A.end(), 0)
 #define all(A) A.begin(), A.end()
 #define loop(var, start, end) for(int var = start; var < end; var++)
 #define loopRev(var, start, end) for(int var = start; var >= end; var--)
-#define newline cout << endl
+#define newline cout << "\n"
 #define fastio ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 const ll mod = 1e9 + 7;
 
-void dfs(int src, vector<vector<int>>& adj, vector<int>& subs, vector<bool>& vis){
-    vis[src] = true;
-    int cnt = adj[src].size();
-    for(int node : adj[src]){
-        if(!vis[node])
-            dfs(node, adj, subs, vis);
-        cnt += subs[node];
+class Solution {
+  private:
+    vector<int> subs;
+
+    void dfs(int u, vector<vector<int>>& G) {
+        subs[u] = G[u].size();
+
+        for(int v : G[u]) {
+            if(subs[v] == -1)
+                dfs(v, G);
+            subs[u] += subs[v];
+        }
     }
-    subs[src] = cnt;
-}
+  public:
+    void getSubordinates(int n, vector<vector<int>>& G) {
+        subs.resize(n + 1, -1);
+
+        dfs(1, G);
+
+        loop(i, 1, n + 1) cout << (subs[i] == -1 ? 0 : subs[i]) << " ";
+    }
+};
 
 int main() {
     fastio
@@ -33,18 +45,15 @@ int main() {
     int n;
     cin >> n;
 
-    vector<vector<int>> adj(n + 1, vector<int>());
-    for(int i = 2; i <= n; i++){
-        int x;
-        cin >> x;
-        adj[x].push_back(i);
+    vector<vector<int>> G(n + 1);
+    loop(i, 2, n + 1) {
+        int u;
+        cin >> u;
+        G[u].push_back(i);
     }
 
-    vector<int> subs(n + 1, 0);
-    vector<bool> vis(n + 1, false);
+    Solution sol;
+    sol.getSubordinates(n, G);
 
-    dfs(1, adj, subs, vis);
-    for(int i = 1; i <= n; i++)
-        cout << subs[i] << " ";
     return 0;
 }
